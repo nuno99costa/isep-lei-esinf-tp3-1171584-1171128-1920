@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class countryTreeTest {
+public class AlphabeticalCountryTreeTest {
 
-    countryTree testSubject = new countryTree();
+    AlphabeticalCountryTree testSubject = new AlphabeticalCountryTree();
     Country a = new Country("Portugal", "Europe", 10, "Lisbon", 38.46, 9.9);
     Country b = new Country("Spain", "Europe", 47, "Madrid", 40.26, 3.42);
     Country c = new Country("France", "Europe", 67, "Paris", 48.51, 2.21);

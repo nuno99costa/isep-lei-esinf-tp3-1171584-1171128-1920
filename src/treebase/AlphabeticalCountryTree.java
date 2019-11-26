@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 
-public class countryTree {
+public class AlphabeticalCountryTree {
 
     AVL tree = null;
 
     /**
      * Empty Constructor
      */
-    public countryTree() {
+    public AlphabeticalCountryTree() {
         tree = new AVL();
     }
 
