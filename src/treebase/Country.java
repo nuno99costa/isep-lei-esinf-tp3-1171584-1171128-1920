@@ -28,6 +28,7 @@ public class Country implements Comparable {
         this.capital = capital;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.borders = new ArrayList<>();
     }
 
     /**
