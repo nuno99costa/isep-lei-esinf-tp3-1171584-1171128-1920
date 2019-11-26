@@ -4,14 +4,22 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 
-public class BSTree {
+public class countryTree {
 
     AVL tree = null;
 
-    public BSTree() {
+    /**
+     * Empty Constructor
+     */
+    public countryTree() {
         tree = new AVL();
     }
 
+    /**
+     * get AVL tee
+     *
+     * @return avl tree
+     */
     public AVL getTree() {
         return tree;
     }
@@ -23,9 +31,8 @@ public class BSTree {
      * @return array list containing names of bordering countries
      */
     public ArrayList getBorders(String country) {
-        Iterator set = tree.inOrder().iterator();
-        while (set.hasNext()) {
-            Country inSet = (Country) set.next();
+        for (Object o : tree.inOrder()) {
+            Country inSet = (Country) o;
             if (inSet.getName().equals(country)) {
                 return inSet.getBorders();
             }

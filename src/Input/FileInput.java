@@ -1,8 +1,8 @@
 package Input;
 
 import treebase.AVL;
-import treebase.BSTree;
 import treebase.Country;
+import treebase.countryTree;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,11 +10,10 @@ import java.util.Scanner;
 
 public class FileInput {
 
-    public static void readDataFiles(BSTree givenTree) throws FileNotFoundException
+    public static void readDataFiles(countryTree givenTree) throws FileNotFoundException
     {
         AVL tree = givenTree.getTree();
         Scanner countryInput = new Scanner(new File("paises.txt"));
-        Scanner borderInput = new Scanner(new File("fronteiras.txt"));
 
         while (countryInput.hasNextLine())
         {
@@ -30,11 +29,9 @@ public class FileInput {
                 double longitude = Double.parseDouble(content[5]);
 
                 Country cont = new Country(name, continent, population, capital, latitude, longitude);
-
-                String borderLine = borderInput.nextLine();
-                if (borderLine.trim().length() > 0)
-                {
-                    String[] borderContent = borderLine.split(",");
+                Scanner borderInput = new Scanner(new File("fronteiras.txt"));
+                while (borderInput.hasNextLine()) {
+                    String[] borderContent = borderInput.nextLine().split(",");
                     String border1 = borderContent[0].trim();
                     String border2 = borderContent[1].trim();
 
