@@ -1,5 +1,7 @@
 package treebase;
 
+import java.util.ArrayList;
+
 public class Country implements Comparable {
     private String name;
     private String continent;
@@ -7,6 +9,7 @@ public class Country implements Comparable {
     private String capital;
     private double latitude;
     private double longitude;
+    private ArrayList<String> borders;
 
     /**
      * Constructor for the country object
@@ -142,6 +145,27 @@ public class Country implements Comparable {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
+
+    /**
+     *  Returns the all the countries that form a border with this country
+     *
+     * @return ArrayList structure containing the border countries' names as String
+     */
+    public ArrayList<String> getBorders() {return borders;}
+
+    /**
+     * Associates a new country to this one as a border country
+     *
+     * @param cont String with the name of the new border country
+     */
+    public void addBorder(String cont)   {borders.add(cont);}
+
+    /**
+     * Returns the number of border countries for this country
+     *
+     * @return int value for number of elements in the border countries list
+     */
+    public int getBorderNumber()  {return borders.size();}
 
     @Override
     public String toString() {
