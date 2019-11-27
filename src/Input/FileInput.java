@@ -1,7 +1,8 @@
 package Input;
 
-import treebase.BST;
+import treebase.AVL;
 import treebase.Country;
+import treebase.KDT;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,8 +10,16 @@ import java.util.Scanner;
 
 public class FileInput {
 
-    public static void readDataFiles(BST tree) throws FileNotFoundException
+
+    public static void readDataFiles(Object a) throws FileNotFoundException
     {
+        KDT KDTree = null;
+        AVL AVLTree = null;
+        if (a instanceof KDT) {
+            KDTree = (KDT) a;
+        } else {
+            AVLTree = (AVL) a;
+        }
         Scanner countryInput = new Scanner(new File("paises.txt"));
 
         while (countryInput.hasNextLine())
@@ -43,8 +52,15 @@ public class FileInput {
                         cont.addBorder(border1);
                     }
                 }
-                tree.insert(cont);
+                if (a instanceof KDT) {
+                    KDTree.insert(cont);
+                } else {
+                    AVLTree.insert(cont);
+                }
             }
+        }
+        if (a instanceof KDT) {
+            KDTree.defineBoundingBoxes();
         }
     }
 }

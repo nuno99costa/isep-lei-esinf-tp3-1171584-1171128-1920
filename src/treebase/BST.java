@@ -46,8 +46,8 @@ public class BST<E extends Comparable<E>> implements BSTInterface<E> {
         }
 
         // update methods
-        public void setElement(E e) {
-            element = e;
+        public void setElement(Object e) {
+            element = (E) e;
         }
 
         public void setLeft(Node<E> leftChild) {

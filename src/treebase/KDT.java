@@ -1,11 +1,67 @@
 package treebase;
 
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.*;
 
 public class KDT<E extends Comparable<E>> extends BST<E> {
 
-    protected BST.Node<E> root = null;     // root of the tree
+    /**
+     * Nested static class for a binary search tree node.
+     */
+
+    protected static class Node<E> {
+        private E element;          // an element stored at this node
+        private BoundingBox<Object> box;
+        private Node<E> left;       // a reference to the left child (if any)
+        private Node<E> right;      // a reference to the right child (if any)
+
+        /**
+         * Constructs a node with the given element and neighbors.
+         *
+         * @param e          the element to be stored
+         * @param leftChild  reference to a left child node
+         * @param rightChild reference to a right child node
+         */
+        public Node(E e, Node<E> leftChild, Node<E> rightChild) {
+            element = e;
+            left = leftChild;
+            right = rightChild;
+            box = new BoundingBox<Object>(e);
+        }
+
+        // accessor methods
+        public E getElement() {
+            return element;
+        }
+
+        public BoundingBox<Object> getBox() {
+            return box;
+        }
+
+        public Node<E> getLeft() {
+            return left;
+        }
+
+        public Node<E> getRight() {
+            return right;
+        }
+
+        // update methods
+        public void setElement(Object e) {
+            element = (E) e;
+        }
+
+        public void setLeft(Node<E> leftChild) {
+            left = leftChild;
+        }
+
+        public void setRight(Node<E> rightChild) {
+            right = rightChild;
+        }
+    }
+
+    //----------- end of nested Node class -----------
+
+    protected Node<E> root = null;     // root of the tree
     int kdim = 0;
     ArrayList<Comparator<E>> comparators = new ArrayList<>();
 
@@ -28,9 +84,9 @@ public class KDT<E extends Comparable<E>> extends BST<E> {
         root = insert(element, root, -1);
     }
 
-    private BST.Node<E> insert(E element, BST.Node<E> node, int level) {
+    private Node<E> insert(E element, Node<E> node, int level) {
         if (node == null)
-            return new BST.Node(element, null, null);
+            return new Node<>(element, null, null);
 
         level++;
         if (level >= kdim) {
@@ -38,14 +94,26 @@ public class KDT<E extends Comparable<E>> extends BST<E> {
         }
 
         Comparator current = comparators.get(level);
-        if (current.compare(node.getElement(), element) > 0) {
+        if (current.compare(node.getElement(), new Node(element, null, null).getElement()) > 0) {
             node.setLeft(insert(element, node.getLeft(), level));
-        } else if (current.compare(node.getElement(), element) < 0) {
+        } else if (current.compare(node.getElement(), new Node(element, null, null).getElement()) < 0) {
             node.setRight(insert(element, node.getRight(), level));
         } else {
-            node.setElement(element);
+            node.setElement(new Node<>(element, null, null));
         }
         return node;
+    }
+
+    public void defineBoundingBoxes() {
+        Iterator<Node<E>> treeIT = posOrderNode().iterator();
+        while (treeIT.hasNext()) {
+            Node<E> testing = treeIT.next();
+            if (testing.getLeft() != null) {
+                testing.getBox().updateBox(testing.getLeft().getElement());
+            } else if (testing.getRight() != null) {
+                testing.getBox().updateBox(testing.getRight().getElement());
+            }
+        }
     }
 
     /**
@@ -55,7 +123,7 @@ public class KDT<E extends Comparable<E>> extends BST<E> {
         root = remove(element, this.root, -1);
     }
 
-    private BST.Node<E> remove(E element, BST.Node<E> node, int level) {
+    private Node<E> remove(E element, Node<E> node, int level) {
 
         if (node == null) {
             return null;    //throw new IllegalArgumentException("Element does not exist");
@@ -90,28 +158,38 @@ public class KDT<E extends Comparable<E>> extends BST<E> {
         return node;
     }
 
-    /**
-     * Returns the Node containing a specific Element, or null otherwise.
-     *
-     * @param element the element to find
-     * @return the Node that contains the Element, or null otherwise
-     * <p>
-     * This method despite not being essential is very useful.
-     * It is written here in order to be used by this class and its
-     * subclasses avoiding recoding.
-     * So its access level is protected
-     */
-    protected BST.Node<E> find(E element, BST.Node<E> node) {
+
+    private E smallestElement(Node<E> node) {
         if (node == null) {
             return null;
         }
-        if (element.compareTo(node.getElement()) == 0) {
-            return node;
+        if (node.getLeft() != null) {
+            return smallestElement(node.getLeft());
+        } else {
+            return node.getElement();
         }
-        if (element.compareTo(node.getElement()) < 0) {
-            return find(element, node.getLeft());
+    }
+
+    public Iterable<Node<E>> posOrderNode() {
+        List<Node<E>> l = new LinkedList<Node<E>>();
+        posOrderNodeSubtree(root, l);
+        return l;
+    }
+
+    /**
+     * Adds positions of the subtree rooted at Node node to the given
+     * snapshot using an post-order traversal
+     *
+     * @param node     Node serving as the root of a subtree
+     * @param snapshot a list to which results are appended
+     */
+    private void posOrderNodeSubtree(Node<E> node, List<Node<E>> snapshot) {
+        if (node == null) {
+            return;
         }
-        return find(element, node.getRight());
+        posOrderNodeSubtree(node.getLeft(), snapshot);
+        posOrderNodeSubtree(node.getRight(), snapshot);
+        snapshot.add(node);
     }
 
     public String toString() {
@@ -127,10 +205,13 @@ public class KDT<E extends Comparable<E>> extends BST<E> {
         if (level != 0) {
             for (int i = 0; i < level - 1; i++)
                 sb.append("|\t");
-            sb.append("|-------" + root.getElement() + "\n");
+            sb.append("|-------").append(root.getElement()).append(root.getBox()).append("\n");
         } else
-            sb.append(root.getElement() + "\n");
+            sb.append(root.getElement()).append("\n");
         toStringRec(root.getLeft(), level + 1, sb);
     }
 
+    public Comparator<E> getComparator(int level) {
+        return comparators.get(level);
+    }
 }
