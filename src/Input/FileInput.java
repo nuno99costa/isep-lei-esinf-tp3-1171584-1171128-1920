@@ -1,7 +1,6 @@
 package Input;
 
-import treebase.AVL;
-import treebase.AlphabeticalCountryTree;
+import treebase.BST;
 import treebase.Country;
 
 import java.io.File;
@@ -10,9 +9,8 @@ import java.util.Scanner;
 
 public class FileInput {
 
-    public static void readDataFiles(AlphabeticalCountryTree givenTree) throws FileNotFoundException
+    public static void readDataFiles(BST tree) throws FileNotFoundException
     {
-        AVL tree = givenTree.getTree();
         Scanner countryInput = new Scanner(new File("paises.txt"));
 
         while (countryInput.hasNextLine())

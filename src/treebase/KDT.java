@@ -114,4 +114,23 @@ public class KDT<E extends Comparable<E>> extends BST<E> {
         return find(element, node.getRight());
     }
 
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        toStringRec(root, 0, sb);
+        return sb.toString();
+    }
+
+    private void toStringRec(Node<E> root, int level, StringBuilder sb) {
+        if (root == null)
+            return;
+        toStringRec(root.getRight(), level + 1, sb);
+        if (level != 0) {
+            for (int i = 0; i < level - 1; i++)
+                sb.append("|\t");
+            sb.append("|-------" + root.getElement() + "\n");
+        } else
+            sb.append(root.getElement() + "\n");
+        toStringRec(root.getLeft(), level + 1, sb);
+    }
+
 }
