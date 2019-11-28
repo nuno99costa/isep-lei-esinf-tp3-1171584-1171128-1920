@@ -18,6 +18,12 @@ public class LatitudeLongitude2DTree {
         return tree;
     }
 
+    /**
+     * Returns the country of the capital pointed by the given coordinates
+     * @param latitude latitude of the country's capital
+     * @param longitude longitude of the country's capital
+     * @return Country object with matching coordinates
+     */
     public Country exactFind(double latitude, double longitude)
     {
         return exactFind(latitude, longitude, tree.root, 0);
