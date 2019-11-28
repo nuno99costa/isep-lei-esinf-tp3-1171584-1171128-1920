@@ -18,6 +18,54 @@ public class LatitudeLongitude2DTree {
         return tree;
     }
 
+    public Country exactFind(double latitude, double longitude)
+    {
+        return exactFind(latitude, longitude, tree.root, 0);
+    }
+
+    private Country exactFind(double latitude, double longitude, KDT.Node node, int level)
+    {
+        Country current = (Country) node.getElement();
+        if(current.getLatitude() == latitude && current.getLongitude() == longitude)
+        {
+            return current;
+        }
+
+        if (level == 0)
+        {
+            if (Double.compare(current.getLatitude(), latitude) > 0)
+                return exactFind(latitude, longitude, node.getLeft(), 1);
+
+            else if (Double.compare(current.getLatitude(), latitude) < 0)
+                return exactFind(latitude, longitude, node.getRight(), 1);
+
+            else
+            {
+                if(Double.compare(current.getLongitude(), longitude) > 0)
+                    return exactFind(latitude, longitude, node.getLeft(), 1);
+
+                else return exactFind(latitude, longitude, node.getRight(), 1);
+            }
+        }
+
+        else
+        {
+            if (Double.compare(current.getLongitude(), longitude) > 0)
+                return exactFind(latitude, longitude, node.getLeft(), 0);
+
+            else if (Double.compare(current.getLongitude(), longitude) < 0)
+                return exactFind(latitude, longitude, node.getRight(), 0);
+
+            else
+            {
+                if(Double.compare(current.getLatitude(), latitude) > 0)
+                    return exactFind(latitude, longitude, node.getLeft(), 0);
+
+                else return exactFind(latitude, longitude, node.getRight(), 0);
+            }
+        }
+    }
+
     public Country nearestNeighbor(double latitude, double longitude) {
         double min = Double.MAX_VALUE;
         nearestLeaftoPoint(latitude, longitude, tree.root, 0, new LinkedList(), min);
