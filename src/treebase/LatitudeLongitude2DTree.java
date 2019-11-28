@@ -99,7 +99,7 @@ public class LatitudeLongitude2DTree {
                 distRight = ((Country) node.getRight().getElement()).getLongitude() - longitude;
                 distLeft = ((Country) node.getLeft().getElement()).getLongitude() - longitude;
             }
-            if (distRight > distLeft) {
+            if (Math.abs(distRight) > Math.abs(distLeft)) {
                 q.add(node);
                 nearestLeaftoPoint(latitude, longitude, node.getLeft(), node_level + 1, q, minDist);
             } else {

@@ -23,7 +23,7 @@ public class Main {
 
         System.out.println(ex2tree.getTree());
 
-        Country test = ex2tree.nearestNeighbor(0, 0);
+        Country test = ex2tree.nearestNeighbor(84, -11);
         System.out.println(test);
     }
 
