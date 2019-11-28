@@ -33,7 +33,9 @@ public class BoundingBox<E> {
     }
 
     public double getDistanceToBox(double x, double y) {
-        throw new UnsupportedOperationException("Not built");
+        Double dx = Math.max(Math.max(minX - x, 0.0), x - maxX);
+        Double dy = Math.max(Math.max(minY - y, 0.0), y - maxY);
+        return Math.sqrt(dx * dx + dy * dy);
     }
 
     @Override

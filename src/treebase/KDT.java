@@ -5,6 +5,81 @@ import java.util.*;
 public class KDT<E extends Comparable<E>> extends BST<E> {
 
     /**
+     * Adds comparator a to list of comparators used comparators in this level
+     *
+     * @param a comparator to add
+     */
+    public void addComparator(Comparator<E> a) {
+        if (comparators.size() < kdim) {
+            comparators.add(a);
+        }
+    }
+
+    //----------- end of nested Node class -----------
+
+    protected Node<E> root = null;     // root of the tree
+    int kdim = 0;
+    ArrayList<Comparator<E>> comparators = new ArrayList<>();
+
+    /* Constructs an empty binary search tree. */
+    public KDT(int k) {
+        super();
+        kdim = k;
+    }
+
+    /**
+     * get comparator used in each level
+     *
+     * @param level - level to get comparator for
+     * @return comparator of input level
+     */
+    public Comparator<E> getComparator(int level) {
+        return comparators.get(level);
+    }
+
+    /**
+     * set up bounding boxes of every node
+     */
+    public void defineBoundingBoxes() {
+        Iterator<Node<E>> treeIT = posOrderNode().iterator();
+        while (treeIT.hasNext()) {
+            Node<E> testing = treeIT.next();
+            if (testing.getLeft() != null) {
+                testing.getBox().updateBox(testing.getLeft().getElement());
+            } else if (testing.getRight() != null) {
+                testing.getBox().updateBox(testing.getRight().getElement());
+            }
+        }
+    }
+
+    /**
+     * Inserts an element in the tree.
+     */
+    public void insert(E element) {
+        root = insert(element, root, -1);
+    }
+
+    private Node<E> insert(E element, Node<E> node, int level) {
+        if (node == null)
+            return new Node<>(element, null, null);
+
+        level++;
+        if (level >= kdim) {
+            level -= kdim;
+        }
+
+        Comparator current = comparators.get(level);
+        if (current.compare(node.getElement(), new Node(element, null, null).getElement()) > 0) {
+            node.setLeft(insert(element, node.getLeft(), level));
+        } else if (current.compare(node.getElement(), new Node(element, null, null).getElement()) < 0) {
+            node.setRight(insert(element, node.getRight(), level));
+        } else {
+            node.setElement(new Node<>(element, null, null));
+        }
+        return node;
+    }
+
+    /**
      * Nested static class for a binary search tree node.
      */
 
@@ -57,62 +132,9 @@ public class KDT<E extends Comparable<E>> extends BST<E> {
         public void setRight(Node<E> rightChild) {
             right = rightChild;
         }
-    }
 
-    //----------- end of nested Node class -----------
-
-    protected Node<E> root = null;     // root of the tree
-    int kdim = 0;
-    ArrayList<Comparator<E>> comparators = new ArrayList<>();
-
-    /* Constructs an empty binary search tree. */
-    public KDT(int k) {
-        super();
-        kdim = k;
-    }
-
-    public void addComparator(Comparator<E> a) {
-        if (comparators.size() < kdim) {
-            comparators.add(a);
-        }
-    }
-
-    /**
-     * Inserts an element in the tree.
-     */
-    public void insert(E element) {
-        root = insert(element, root, -1);
-    }
-
-    private Node<E> insert(E element, Node<E> node, int level) {
-        if (node == null)
-            return new Node<>(element, null, null);
-
-        level++;
-        if (level >= kdim) {
-            level -= kdim;
-        }
-
-        Comparator current = comparators.get(level);
-        if (current.compare(node.getElement(), new Node(element, null, null).getElement()) > 0) {
-            node.setLeft(insert(element, node.getLeft(), level));
-        } else if (current.compare(node.getElement(), new Node(element, null, null).getElement()) < 0) {
-            node.setRight(insert(element, node.getRight(), level));
-        } else {
-            node.setElement(new Node<>(element, null, null));
-        }
-        return node;
-    }
-
-    public void defineBoundingBoxes() {
-        Iterator<Node<E>> treeIT = posOrderNode().iterator();
-        while (treeIT.hasNext()) {
-            Node<E> testing = treeIT.next();
-            if (testing.getLeft() != null) {
-                testing.getBox().updateBox(testing.getLeft().getElement());
-            } else if (testing.getRight() != null) {
-                testing.getBox().updateBox(testing.getRight().getElement());
-            }
+        public boolean isLeaf() {
+            return this.getRight() == null && this.getLeft() == null;
         }
     }
 
@@ -157,7 +179,6 @@ public class KDT<E extends Comparable<E>> extends BST<E> {
 
         return node;
     }
-
 
     private E smallestElement(Node<E> node) {
         if (node == null) {
@@ -209,9 +230,5 @@ public class KDT<E extends Comparable<E>> extends BST<E> {
         } else
             sb.append(root.getElement()).append("\n");
         toStringRec(root.getLeft(), level + 1, sb);
-    }
-
-    public Comparator<E> getComparator(int level) {
-        return comparators.get(level);
     }
 }
