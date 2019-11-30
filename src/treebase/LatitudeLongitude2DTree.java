@@ -1,8 +1,6 @@
 package treebase;
 
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 public class LatitudeLongitude2DTree {
     Country nearestNeighbor;
@@ -20,51 +18,43 @@ public class LatitudeLongitude2DTree {
 
     /**
      * Returns the country of the capital pointed by the given coordinates
-     * @param latitude latitude of the country's capital
+     *
+     * @param latitude  latitude of the country's capital
      * @param longitude longitude of the country's capital
      * @return Country object with matching coordinates
      */
-    public Country exactFind(double latitude, double longitude)
-    {
+    public Country exactFind(double latitude, double longitude) {
         return exactFind(latitude, longitude, tree.root, 0);
     }
 
-    private Country exactFind(double latitude, double longitude, KDT.Node node, int level)
-    {
+    private Country exactFind(double latitude, double longitude, KDT.Node node, int level) {
         Country current = (Country) node.getElement();
-        if(current.getLatitude() == latitude && current.getLongitude() == longitude)
-        {
+        if (current.getLatitude() == latitude && current.getLongitude() == longitude) {
             return current;
         }
 
-        if (level == 0)
-        {
+        if (level == 0) {
             if (Double.compare(current.getLatitude(), latitude) > 0)
                 return exactFind(latitude, longitude, node.getLeft(), 1);
 
             else if (Double.compare(current.getLatitude(), latitude) < 0)
                 return exactFind(latitude, longitude, node.getRight(), 1);
 
-            else
-            {
-                if(Double.compare(current.getLongitude(), longitude) > 0)
+            else {
+                if (Double.compare(current.getLongitude(), longitude) > 0)
                     return exactFind(latitude, longitude, node.getLeft(), 1);
 
                 else return exactFind(latitude, longitude, node.getRight(), 1);
             }
-        }
-
-        else
-        {
+        } else {
             if (Double.compare(current.getLongitude(), longitude) > 0)
                 return exactFind(latitude, longitude, node.getLeft(), 0);
 
             else if (Double.compare(current.getLongitude(), longitude) < 0)
                 return exactFind(latitude, longitude, node.getRight(), 0);
 
-            else
-            {
-                if(Double.compare(current.getLatitude(), latitude) > 0)
+            else {
+                if (Double.compare(current.getLatitude(), latitude) > 0)
                     return exactFind(latitude, longitude, node.getLeft(), 0);
 
                 else return exactFind(latitude, longitude, node.getRight(), 0);
@@ -153,5 +143,34 @@ public class LatitudeLongitude2DTree {
 
         // calculate the result
         return (c * r);
+    }
+
+    public List<Country> getCountriesInsideGeoBox(double latitude1, double longitude1, double latitude2, double longitude2) {
+        BoundingBox a = new BoundingBox(latitude1, longitude1, latitude2, longitude2);
+        ArrayList result = new ArrayList();
+        getCountriesInsideGeoBox(a, tree.root, 0, result);
+        return result;
+    }
+
+    private void getCountriesInsideGeoBox(BoundingBox box, KDT.Node node, int level, List countries) {
+        if (level > 1) {
+            level -= 2;
+        }
+        if (box.containsNode(node)) {
+            countries.add(node.getElement());
+        }
+        if (box.holdsCord(node, level)) {
+            if (node.getRight() != null)
+                getCountriesInsideGeoBox(box, node.getRight(), level + 1, countries);
+            if (node.getLeft() != null)
+                getCountriesInsideGeoBox(box, node.getLeft(), level + 1, countries);
+        } else if (!node.isLeaf()) {
+            if (node.getRight() != null && box.isRight(node, level)) {
+                getCountriesInsideGeoBox(box, node.getRight(), level + 1, countries);
+            } else if (node.getLeft() != null && !box.isRight(node, level)) {
+                getCountriesInsideGeoBox(box, node.getLeft(), level + 1, countries);
+            }
+
+        }
     }
 }

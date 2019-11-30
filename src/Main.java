@@ -4,6 +4,7 @@ import treebase.Country;
 import treebase.LatitudeLongitude2DTree;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
 public class Main {
 
@@ -25,6 +26,9 @@ public class Main {
 
         Country test = ex2tree.nearestNeighbor(84, -11);
         System.out.println(test);
+
+        ArrayList test1 = (ArrayList) ex2tree.getCountriesInsideGeoBox(6, -67, 11, -57);
+        System.out.println(test1);
     }
 
 }
